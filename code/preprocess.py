@@ -25,6 +25,7 @@ def resize_picture(picture_path: str, desired_size: int, output_path: str) -> No
     """
 
     try:
+        # try-except clause used to check if the path is a valid picture file
         im = Image.open(picture_path)
     except IOError:
         return
@@ -41,6 +42,7 @@ def resize_picture(picture_path: str, desired_size: int, output_path: str) -> No
 
     plt.imshow(new_im)
     plt.savefig(output_path)
+    
 
 if __name__ == "__main__":
 
