@@ -1,4 +1,4 @@
-# Used to process and save the pictures
+# Used to create, process and save the pictures
 from PIL import Image
 
 
