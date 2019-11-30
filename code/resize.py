@@ -14,15 +14,15 @@ def resize_picture(picture, desired_size, output_path):
         takes as INPUTS:
             -picture_path: an image file, usually opened via PIL.Image.open(path)
             -desired_size: the size of the square picture we want to fit our resized picture in
-            -output_path: the path to store the resized picture
+            -output_path: the path to store the resized picture, if None the picture won't be saved
         DOES:
             Creates a square black image of size desired_size*desired_size,
             pastes on it the resized input picture and saves the result as output_path.
         and OUTPUTS:
-            None
+            The resized picture
 
         DISCLAIMER:
-        This code was taken from https://jdhao.github.io/2017/11/06/resize-image-to-square-with-padding/
+        This code was inspired from https://jdhao.github.io/2017/11/06/resize-image-to-square-with-padding/
     """
 
     old_size = picture.size
@@ -35,24 +35,8 @@ def resize_picture(picture, desired_size, output_path):
     new_im = Image.new("RGB", (desired_size, desired_size))
     new_im.paste(im, ((desired_size-new_size[0])//2, (desired_size-new_size[1])//2))
 
-    new_im.save(output_path)
-
-
-if __name__ == "__main__":
-
-    dataset_path = './datasets/MWI-Dataset-1.1_2000'
-    new_dataset_path = './datasets/parsed_MWI'
-
-    DESIRED_SIZE = 160
-
-    for subdir, dirs, files in os.walk(dataset_path):
-        for file in files:
-
-            try:
-                pic = Image.open(os.path.join(subdir, file))
-            except IOError:
-                continue
-
-            output = os.path.join(new_dataset_path + ('/training' if np.random.uniform() <= 0.85 else '/testing') + subdir[subdir.rfind('/'):], file[:file.rfind('.')] + '_resized' + file[file.rfind('.'):])
-            resize_picture(pic, DESIRED_SIZE, output)
+    if output_path:
+        new_im.save(output_path)
+    
+    return new_im
     
