@@ -1,23 +1,17 @@
-# Used to navigate directories
-import os
-
 # Used to process and save the pictures
 from PIL import Image
 
-# Used to randomly sample training and testing datasets
-import numpy as np
 
-
-def resize_picture(picture, desired_size, output_path):
+def resize_picture(picture, desired_size, output_path=None):
     """
         resize_picture(picture, desired_size, output_path)
         takes as INPUTS:
             -picture_path: an image file, usually opened via PIL.Image.open(path)
             -desired_size: the size of the square picture we want to fit our resized picture in
-            -output_path: the path to store the resized picture, if None the picture won't be saved
+            -output_path: the path to store the resized picture, if (not output_path) the picture won't be saved
         DOES:
             Creates a square black image of size desired_size*desired_size,
-            pastes on it the resized input picture and saves the result as output_path.
+            pastes on it the resized input picture and returns the result, maybe saving it to output_path in the process.
         and OUTPUTS:
             The resized picture
 
