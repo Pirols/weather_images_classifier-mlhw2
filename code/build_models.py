@@ -1,12 +1,11 @@
 import tensorflow as tf
 
-def build_pretrained_model(img_size, output_size, base_learning_rate, fine_tune_at):
+def build_pretrained_model(img_size, output_size, fine_tune_at):
     """
-        build_pretrained_model(img_size, base_learning_rate, fine_tune_at)
+        build_pretrained_model(img_size, fine_tune_at)
         takes as INPUTS:
             -img_size: the size(resolution) of the input images
             -output_size: the number of output classes the model will be trained to classify
-            -base_learning_rate: the learning rate used to train the model
             -fine_tune_at: The first fine_tune_at layers of tf.keras.applications.MobileNetV2 will be frozen and won't be updated during backtracking
         DOES:
             Builds and returns a model composed of 3 components:
@@ -39,20 +38,19 @@ def build_pretrained_model(img_size, output_size, base_learning_rate, fine_tune_
         tf.keras.layers.Dense(output_size)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=base_learning_rate),
+    model.compile(optimizer=tf.keras.optimizers.Adadelta(),
                 loss='sparse_categorical_crossentropy',
                 metrics=['accuracy'])
 
     return model
 
 
-def build_model(img_size, output_size, base_learning_rate):
+def build_model(img_size, output_size):
     """
-        build_model(img_size, base_learning_rate, output_size)
+        build_model(img_size, output_size)
         takes as INPUTS:
             -img_size: the size(resolution) of the input images
             -output_size: the number of output classes the model will be trained to classify
-            -base_learning_rate: the learning rate used to train the model
         DOES:
             Builds and returns a model composed of 3 components:
                 1) an uninitialised tf.keras.applications.MobileNetV2
@@ -75,7 +73,7 @@ def build_model(img_size, output_size, base_learning_rate):
         tf.keras.layers.Dense(output_size)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=base_learning_rate),
+    model.compile(optimizer=tf.keras.optimizers.Adadelta(),
                 loss='sparse_categorical_crossentropy',
                 metrics=['accuracy'])
 
