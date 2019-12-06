@@ -13,6 +13,9 @@ import os
 # Used to randomly sample pictures from the datasets
 import random
 
+# Used to prevent some warning messages from appearing
+import warnings
+
 
 def get_input_resized_picture(picture, desired_size, output_path=None):
     """
@@ -39,13 +42,14 @@ def get_input_resized_picture(picture, desired_size, output_path=None):
     im = picture.resize(new_size, Image.ANTIALIAS)
 
     new_im = Image.new("RGB", (desired_size, desired_size))
-    new_im.paste(im, ((desired_size-new_size[0])//2, (desired_size-new_size[1])//2))
+    new_im.paste(
+        im, ((desired_size-new_size[0])//2, (desired_size-new_size[1])//2))
 
     if output_path:
         new_im.save(output_path)
-    
+
     return np.array(new_im)/255
-    
+
 
 def get_output_label(file, mapping):
     """
@@ -113,3 +117,48 @@ def image_generator(dataset_path, desired_size, mapping, batch_size=32, shuffle=
             y = list()
 
     yield x, y
+
+
+if __name__ == "__main__":
+
+    ### -------------------- Resizing training and testing samples -------------------- ###
+
+    training_dataset = './datasets/MWI-Dataset-1.1_2000'
+    testing_dataset = './datasets/MWI-Dataset-1.2.5'
+
+    new_training_dataset = './datasets/training'
+    new_testing_dataset = './datasets/testing'
+
+    IMG_SIZE = 299
+
+    # Prevents the appearance of messages signaling the presence of non-picture files
+    warnings.filterwarnings("ignore")
+
+    for root, subdir, files in os.walk(Path(training_dataset)):
+        for file in files:
+            try:
+                pic = Image.open(os.path.join(root, file))
+            except IOError:
+                continue
+
+            output_path = os.path.join(new_training_dataset + subdir[subdir.rfind('/'):],
+                                       file[:file.rfind('.')] + '_resized' + file[file.rfind('.'):])
+
+            # Saving resized pictures
+            get_input_resized_picture(pic, IMG_SIZE, output_path=output_path)
+
+    for root, subdir, files in os.walk(Path(testing_dataset)):
+        for file in files:
+            try:
+                pic = Image.open(os.path.join(root, file))
+            except IOError:
+                continue
+
+            output_path = os.path.join(new_testing_dataset + subdir[subdir.rfind('/'):],
+                                       file[:file.rfind('.')] + '_resized' + file[file.rfind('.'):])
+
+            # Saving resized pictures
+            get_input_resized_picture(pic, IMG_SIZE, output_path=output_path)
+
+    # Resets the warning
+    warnings.filterwarnings("default")
