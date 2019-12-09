@@ -1,3 +1,6 @@
+### NOT USED FOR THIS REPOSITORY JUST LEAVING IT HERE FOR LATER USAGES ###
+
+
 # Used to create, process and save the pictures
 from PIL import Image
 
