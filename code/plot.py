@@ -27,6 +27,6 @@ def save_plot(save_path, history):
     ax[1].legend()
 
     plt.xlabel('Epochs')
-    plt.xticks(range[1:len(history['loss'])+1])
+    plt.xticks(range(1, len(history['loss']) + 1))
 
     plt.savefig(save_path, bbox_inches='tight')
