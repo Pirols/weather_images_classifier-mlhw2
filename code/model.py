@@ -41,11 +41,11 @@ def build_model(input_shape, output_size, fine_tune_at=None, weights='imagenet',
     # Complete the model with other layers
     model = K.Sequential([
         base_model,
-        K.layers.Dense(dense_size, kernel_regularizer=K.regularizers.l2(regularization_factor), bias_regularizer=K.regularizers.l2(regularization_factor), activation='relu'),
-        K.layers.Dropout(dropout_rate),
-        K.layers.GlobalAveragePooling2D(),
-        K.layers.Dropout(dropout_rate),
-        K.layers.Dense(output_size, activation='softmax')
+        K.layers.Dense(dense_size, kernel_regularizer=K.regularizers.l2(regularization_factor), bias_regularizer=K.regularizers.l2(regularization_factor), activation='relu', name='L2_Regularized_Dense'),
+        K.layers.Dropout(dropout_rate, name='Dropout_1'),
+        K.layers.GlobalAveragePooling2D(name='Pooling'),
+        K.layers.Dropout(dropout_rate, name='Dropout_2'),
+        K.layers.Dense(output_size, activation='softmax', name='Output_layer')
     ])
 
     # Compile the model
