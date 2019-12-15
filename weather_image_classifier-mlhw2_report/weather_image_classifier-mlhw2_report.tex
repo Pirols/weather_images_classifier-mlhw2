@@ -42,11 +42,11 @@
 \subsection{Assignment}
 The assignment of the homework was to build an image classifier capable of assigning pictures to one of the following classes: \{\textit{RAINY}, \textit{HAZE}, \textit{SUNNY}, \textit{SNOWY}\}; based on how the weather was like at the moment of the picture's capture. In particular, the request was to address the former problem in 2 different ways: 
 \begin{enumerate}
-\item Defining and training a CNN from scratch for this particular task;
-\item Applying transfer learning and fine-tuning on a pre-trained model.
+\item Applying transfer learning and fine-tuning on a pre-trained model;
+\item Defining and training a CNN from scratch for this particular task.
 \end{enumerate}
 \subsection{Dataset}
-The provided datasets\footnote{available here: \href{https://drive.google.com/drive/folders/1UzH28Q8xki8_DMYdDgHxi40-CJ800Kaq}{https://drive.google.com/drive/folders/1UzH28Q8xki8\textunderscore DMYdDgHxi40-CJ800Kaq}} are separated in several different archives and folders. I have chosen to use \textit{MWI-Dataset-1.1\textunderscore 2000} for training, \textit{MWI-Dataset-1.2.4} for testing and \textit{MWI-Dataset-1.2.5} for validation. All these datasets are perfectly balanced, in particular the training dataset is composed by 2000 pictures, 500 per class, while the validation and testing datasets are composed by 400 pictures each, 100 per class. 
+The provided datasets\footnote{available here: \href{https://drive.google.com/drive/folders/1UzH28Q8xki8_DMYdDgHxi40-CJ800Kaq}{https://drive.google.com/drive/folders/1UzH28Q8xki8\textunderscore DMYdDgHxi40-CJ800Kaq}} are separated in several different archives and folders. I have chosen to use \textit{MWI-Dataset-1.1\textunderscore 2000} for training, \textit{MWI-Dataset-1.2.4} for testing and \textit{MWI-Dataset-1.2.5} for validation. All these datasets are perfectly balanced, in particular the training dataset is composed by 2000 pictures, 500 per class, while the validation and testing datasets are composed by 400 pictures(100 per class) each. 
 \paragraph{Chosen resolution}
 The pictures in the datasets don't share a common resolution, this is why I had to resize them in order to be able to train and test. 
 
@@ -75,8 +75,7 @@ In particular, I have chosen to use 299x299 as the pictures' resolution; I have 
 \end{enumerate}
 
 Although, differently from what I expected, the second, more classical, method of resizing performed better.
-\section{Models}
-\subsection{Pre-trained Model}
+\section{Pre-trained Model}
 After looking at the pre-trained models available \href{https://keras.io/applications}{\textcolor{blue}{\underline{here}}}, I have chosen to use the Xception model, characterised by a good ratio between size and accuracy.
 
 The first pre-trained model that I tried is the following one, note that the xception model is completely frozen, i.e. its layers are not going to be modified during the backtracking phase: 
@@ -86,7 +85,7 @@ The first pre-trained model that I tried is the following one, note that the xce
 \label{fig: first_model}
 \end{figure}
 
-Although, also, due to the small number of samples in the training dataset, this model performed poorly, clearly overfitting in less than 10 epochs:
+Due to the small number of samples in the training dataset, this model performed poorly, clearly overfitting in less than 10 epochs:
 \begin{figure} [h!]
 \centering
 \includegraphics[width=\textwidth]{first_train.pdf}
@@ -102,12 +101,8 @@ In order to alleviate this problem I have decided to try to add some dropout and
 \label{fig: final_model}
 \end{figure}
 
-\subsection{CNN Model}
-In order to be able to better estimate the influence of the pre-trained weights on a niche task, like this one, with few training samples I have decided to use the very same model with the xception model's weights randomly initialized.
-\newpage
-\section{Training}
 \subsection{Hyperparameters}
-Both the models share the following hyperparameters:
+The hyperparameters of the pre-trained model are:
 \begin{itemize}
 \item \textbf{Dense size}: The size of the regularized dense layer;
 \item \textbf{Regularization term}: The value for the kernel regularizer and the bias one;
@@ -119,9 +114,8 @@ Both the models share the following hyperparameters:
 \item \textbf{Epochs}: The number of epochs to train the models;
 \item \textbf{Batch size}: I have used 50.
 \end{itemize}
-
 \subsection{GridSearch}
-In order to try to optimize as much as possible the 2 models I wanted to tune the hyperparameters performing a GridSearch, which in the end I carried out only partially due to time and computational power limitations.
+In order to try to optimize as much as possible the model I wanted to tune the hyperparameters performing a GridSearch, which in the end I carried out only partially due to time and computational power limitations.
 
 In particular, I wanted to test the following values:
 \begin{itemize}
@@ -129,6 +123,85 @@ In particular, I wanted to test the following values:
 \item \textbf{Regularization term}: \{0.001, 0.01\};
 \item \textbf{Dropout rate}: \{0.3, 0.5\};
 \item \textbf{Learning rate}: \{0.0001, 0.001\};
-\item \textbf{Epochs}: I have used early stopping on the validation loss with patience=3
+\item \textbf{Epochs}: I have used early stopping on the validation loss with patience=3.
+\end{itemize}
+\paragraph{Pre-trained model best hyperparameters:}
+As expected, due to the great presence of overfitting, a higher value of the dropout rate and a smaller learning rate performed better.
+\begin{center}
+\begin{tabular}{|c|c|c|c|} 
+ \hline
+ \textbf{Dense size} & \textbf{Regularization term} & \textbf{Dropout rate} & \textbf{Learning rate} \\ 
+ \hline
+ 128 & 0.001 & 0.5 & 0.0001 \\ 
+ \hline
+\end{tabular}
+\end{center}
+\subsection{Training tuned pre-trained model}
+These are the plots of the training of the tuned pre-trained model:
+\begin{figure} [h!]
+\centering
+\includegraphics[width=0.8\textwidth]{pretrained_final_train.pdf}
+\label{fig: pretrained_final_train}
+\end{figure}
+
+We can see that this model still overfits a lot but on a larger number of epochs w.r.t. the first model.
+\newpage
+\paragraph{Results of the final model:}
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ & \textbf{Accuracy} & \textbf{Loss}\\ 
+ \hline
+ \textbf{Training} & 0.886 & 0.574 \\
+ \textbf{Validation} & 0.733 & 0.878 \\
+ \textbf{Testing} & 0.715 & 0.983 \\
+ \hline
+\end{tabular}
+\end{center}
+\section{New Model}
+I have chosen to implement the AlexNet model, as follows:
+\begin{figure} [h!]
+\centering
+\includegraphics[width=0.73\textwidth]{new_model.png}
+\label{fig: new_model}
+\end{figure}
+\newpage
+\subsection{Training}
+For this model, due to time limits, I have not run any hyperparameters tuning and this is one of the reasons why it performed extremely badly as we can see in the following plots:
+\begin{figure} [h!]
+\centering
+\includegraphics[width=\textwidth]{new_final_train.pdf}
+\label{fig: new_final_train}
+\end{figure}
+\paragraph{Results of the final model:}
+\begin{center}
+\begin{tabular}{|c|c|c|} 
+ \hline
+ & \textbf{Accuracy} & \textbf{Loss}\\ 
+ \hline
+ \textbf{Training} & 0.492 & 1.354 \\
+ \textbf{Validation} & 0.250 & 1.508 \\
+ \textbf{Testing} & 0.433 & 2.267 \\
+ \hline
+\end{tabular}
+\end{center}
+\newpage
+\section{Results}
+\subsection{Comparison}
+In the end, the pre-trained model, largely, outperformed the new one, this is mainly due to the following reasons:
+\begin{enumerate}
+\item I have spent more time and effort on the former model, and did not even manage to tune the hyperparameters of the latter one;
+\item The pre-trained model has been trained for many epochs on a huge dataset of images and it can generate a well-refined set of features from each picture, this can represent a huge advantage when dealing with a niche task, like this one, with very few training samples.
+\end{enumerate}
+
+Obviously, I have submitted the pre-trained model.
+\subsection{Proposed Improvements}
+The results achieved can be largely improved, some ideas to do so are the following:
+\begin{itemize}
+\item Test other pre-trained models;
+\item Improve the architecture of the model;
+\item Train on more samples or perform data augmentation;
+\item Test other hyperparameters' values or perform RandomSearch;
+\item Test other resolutions.
 \end{itemize}
 \end{document}
