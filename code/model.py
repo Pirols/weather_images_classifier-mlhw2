@@ -1,5 +1,4 @@
-from tensorflow.keras.layers import (Activation, AveragePooling2D, Conv2D, Dense, Dropout,
-                          Flatten, MaxPooling2D)
+from tensorflow.keras.layers import (Activation, AveragePooling2D, Conv2D, Dense, Dropout, Flatten, MaxPooling2D)
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow import keras as K
 
