@@ -1,5 +1,4 @@
-### NOT USED FOR THIS REPOSITORY JUST LEAVING IT HERE FOR LATER USAGES ###
-
+### USED TO TEST A DIFFERENT RESIZING METHOD ###
 
 # Used to create, process and save the pictures
 from PIL import Image
