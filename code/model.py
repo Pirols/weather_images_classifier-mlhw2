@@ -1,6 +1,10 @@
+from tensorflow.keras.layers import (Activation, AveragePooling2D, Conv2D, Dense, Dropout,
+                          Flatten, MaxPooling2D)
+from tensorflow.keras.layers import BatchNormalization
 from tensorflow import keras as K
 
-def build_model(input_shape, output_size, fine_tune_at=None, weights='imagenet', dense_size=64, regularization_factor=0.001, dropout_rate=0.3, base_learning_rate=0.001):
+
+def build_pretrained_model(input_shape, output_size, fine_tune_at=None, weights='imagenet', dense_size=64, regularization_factor=0.001, dropout_rate=0.3, base_learning_rate=0.001):
     """
         PARAMETERS:
             -input_shape: The shape of the model's input, e.g. (299, 299, 3)
@@ -50,6 +54,53 @@ def build_model(input_shape, output_size, fine_tune_at=None, weights='imagenet',
 
     # Compile the model
     model.compile(optimizer=K.optimizers.RMSprop(learning_rate=base_learning_rate, rho=0.9),
+                  loss='categorical_crossentropy',
+                  metrics=['categorical_accuracy'])
+
+    return model
+
+
+def AlexNet(input_shape, output_size, base_learning_rate):
+    # Implementation of AlexNet
+
+    model = K.Sequential()
+    
+    model.add(Conv2D(filters=64, input_shape=input_shape, kernel_size=(11,11), strides=(4,4), padding='valid', activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    model.add(BatchNormalization())
+        
+    model.add(Conv2D(filters=128, kernel_size=(11,11), strides=(1,1), padding='valid', activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    model.add(BatchNormalization())
+
+    model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid', activation='relu'))
+    model.add(BatchNormalization())
+    
+    model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid', activation='relu'))
+    model.add(BatchNormalization())
+
+    model.add(Conv2D(filters=128, kernel_size=(3,3), strides=(1,1), padding='valid', activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+    model.add(BatchNormalization())
+    
+    model.add(Flatten())
+    
+    model.add(Dense(2048, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+
+    model.add(Dense(2048, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(BatchNormalization())
+    
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.4))
+    model.add(BatchNormalization())
+
+    model.add(Dense(output_size, activation='softmax'))
+
+    # Compile
+    model.compile(optimizer=K.optimizers.RMSprop(base_learning_rate, rho=0.9),
                   loss='categorical_crossentropy',
                   metrics=['categorical_accuracy'])
 
